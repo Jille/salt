@@ -1769,16 +1769,16 @@ def line(path, content=None, match=None, mode=None, location=None,
 
         .. note::
 
-            If ``mode=insert`` is used, at least one of the following
-            options must also be defined: ``location``, ``before``, or
+            If ``mode=insert`` or ``mode=ensure`` is used, at least one of the
+            following options must also be defined: ``location``, ``before``, or
             ``after``. If ``location`` is used, it takes precedence
             over the other two options.
 
     location
         Defines where to place content in the line. Note this option is only
-        used when ``mode=insert`` is specified. If a location is passed in, it
-        takes precedence over both the ``before`` and ``after`` kwargs. Valid
-        locations are:
+        used when ``mode=insert`` or ``mode=ensure`` is specified. If a
+        location is passed in, it takes precedence over both the ``before`` and
+        ``after`` kwargs. Valid locations are:
 
         - start
             Place the content at the beginning of the file.
@@ -1929,7 +1929,13 @@ def line(path, content=None, match=None, mode=None, location=None,
         after = after and after.strip()
         before = before and before.strip()
 
-        if before and after:
+        if location:
+            if location == 'start':
+                body = ''.join([content, body])
+            elif location == 'end':
+                body = ''.join([body, _get_line_indent(body[-1], content, indent) if body else content])
+
+        elif before and after:
             _assert_occurrence(body, before, 'before')
             _assert_occurrence(body, after, 'after')
 
