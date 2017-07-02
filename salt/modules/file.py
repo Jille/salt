@@ -1839,12 +1839,12 @@ def line(path, content=None, match=None, mode=None, location=None,
             raise CommandExecutionError('File "{0}" does not exists or is not a file.'.format(path))
         return False  # No changes had happened
 
-    mode = mode and mode.lower() or mode
+    if not mode:
+        raise CommandExecutionError('Mode was not defined. How to process the file?')
+
+    mode = mode.lower()
     if mode not in ['insert', 'ensure', 'delete', 'replace']:
-        if mode is None:
-            raise CommandExecutionError('Mode was not defined. How to process the file?')
-        else:
-            raise CommandExecutionError('Unknown mode: "{0}"'.format(mode))
+        raise CommandExecutionError('Unknown mode: "{0}"'.format(mode))
 
     # We've set the content to be empty in the function params but we want to make sure
     # it gets passed when needed. Feature #37092
